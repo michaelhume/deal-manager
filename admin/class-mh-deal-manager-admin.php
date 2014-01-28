@@ -71,6 +71,18 @@ class MH_Deal_Manager_Admin {
 		// Add an action link pointing to the options page.
 		$plugin_basename = plugin_basename( plugin_dir_path( __DIR__ ) . $this->plugin_slug . '.php' );
 		add_filter( 'plugin_action_links_' . $plugin_basename, array( $this, 'add_action_links' ) );
+		
+		// pull in the meta-box functionality
+        if ( !defined ( 'RWMB_URL' ) ){
+            define( 'RWMB_URL', MHDM_PLUGIN_URL .  '/admin/includes/plugin/meta-box/' );
+        }
+        
+        if ( !defined ( 'RWMB_DIR' ) ){    
+            define( 'RWMB_DIR', MHDM_PLUGIN_DIR . '/admin/includes/plugin/meta-box/' );
+        }
+		
+		// load custom meta boxes
+		add_action( 'after_setup_theme', array( $this, 'setup_meta_boxes' ) );				
 
 		/*
 		 * Define custom functionality.
@@ -107,6 +119,20 @@ class MH_Deal_Manager_Admin {
 		}
 
 		return self::$instance;
+	}
+	
+	
+	/**
+	 * setup_meta_boxes function.
+	 *
+	 *	Setup the custom meta boxes for our custom post types
+	 * 
+	 * @access public
+	 * @return void
+	 */
+	public function setup_meta_boxes(){
+		require_if_theme_supports( $this->plugin_slug . '-custom-meta', MHDM_PLUGIN_DIR . '/admin/includes/plugin/meta-box/meta-box.php' );
+		require_if_theme_supports( $this->plugin_slug . '-custom-meta', MHDM_PLUGIN_DIR . '/admin/includes/core/meta-boxes.php' );
 	}
 
 	/**

@@ -73,6 +73,13 @@ class MH_Deal_Manager {
 		// Load public-facing style sheet and JavaScript.
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+		
+		// add custom theme support
+		add_action( 'after_setup_theme', array( $this, 'add_theme_support' ) );
+		
+		// setup custom post types
+		add_action( 'after_setup_theme', array( $this, 'load_custom_post_types' ) );
+		
 
 		/* Define custom functionality.
 		 * Refer To http://codex.wordpress.org/Plugin_API#Hooks.2C_Actions_and_Filters
@@ -108,6 +115,40 @@ class MH_Deal_Manager {
 		}
 
 		return self::$instance;
+	}
+	
+	
+	/**
+	 * load_custom_post_types function.
+	 * 
+	 * @access public
+	 * @return void
+	 */
+	public function load_custom_post_types(){
+		require_if_theme_supports( $this->plugin_slug . '-post-types', MHDM_PLUGIN_DIR . '/includes/core/post-types.php' );	
+	}
+	
+	
+	/**
+	 * add_theme_support function.
+	 * 
+	 * @access public
+	 * @return void
+	 */
+	public function add_theme_support(){
+		
+		add_theme_support(
+     		$this->plugin_slug .'-post-types',
+    		array(  'deal', 
+    		        'requirement', 
+    		        'associate', 
+    		        'property',
+    		       )
+    	);
+    	
+    	add_theme_support(
+    	    $this->plugin_slug .'-custom-meta'
+    	);
 	}
 
 	/**
@@ -148,7 +189,7 @@ class MH_Deal_Manager {
 	}
 
 	/**
-	 * Fired when the plugin is deactivated.
+	 * Fired when the plugin is deactivated1
 	 *
 	 * @since    1.0.0
 	 *
@@ -156,6 +197,8 @@ class MH_Deal_Manager {
 	 *                                       "Network Deactivate" action, false if
 	 *                                       WPMU is disabled or plugin is
 	 *                                       deactivated on an individual blog.
+	 *
+	 *	@TODO remove costom caps during deactivation (setup in post-types)
 	 */
 	public static function deactivate( $network_wide ) {
 
@@ -278,6 +321,8 @@ class MH_Deal_Manager {
 		wp_enqueue_script( $this->plugin_slug . '-plugin-script', plugins_url( 'assets/js/public.js', __FILE__ ), array( 'jquery' ), self::VERSION );
 	}
 
+
+	
 	/**
 	 * NOTE:  Actions are points in the execution of a page or process
 	 *        lifecycle that WordPress fires.

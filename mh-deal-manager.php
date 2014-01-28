@@ -2,7 +2,7 @@
 /**
  * Deal Manager Plugin
  *
- * This is a wordpress plugin intended to make mortgage brokers life better 
+ * This is a wordpress plugin intended to make mortgage brokers life better.
  *
  * @package   MH_Deal_Manager
  * @author    Michael Hume <m.p.hume@gmail.com>
@@ -21,7 +21,8 @@
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Domain Path:       /languages
- * GitHub Plugin URI: https://github.com/<owner>/<repo>
+ * GitHub Plugin URI: https://github.com/michaelhume/deal-manager
+ * GitHub Branch:     master
  */
 
 // If this file is called directly, abort.
@@ -29,6 +30,17 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
+// Constants and Definitions
+
+if ( ! defined( 'MHDM_PLUGIN_BASENAME' ) )
+	define( 'MHDM_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
+	
+if ( ! defined( 'MHDM_PLUGIN_DIR' ) )
+	define( 'MHDM_PLUGIN_DIR', untrailingslashit( dirname( __FILE__ ) ) );
+
+if ( ! defined( 'MHDM_PLUGIN_URL' ) )
+	define( 'MHDM_PLUGIN_URL', untrailingslashit( plugins_url( '', __FILE__ ) ) );
+	
 /*----------------------------------------------------------------------------*
  * Public-Facing Functionality
  *----------------------------------------------------------------------------*/

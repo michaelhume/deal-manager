@@ -41,6 +41,10 @@ if ( ! defined( 'MHDM_PLUGIN_DIR' ) )
 if ( ! defined( 'MHDM_PLUGIN_URL' ) )
 	define( 'MHDM_PLUGIN_URL', untrailingslashit( plugins_url( '', __FILE__ ) ) );
 	
+// get rid of the tempting file editor!
+if ( !defined ('DISALLOW_FILE_EDIT') ) 
+ 	define( 'DISALLOW_FILE_EDIT', true ); 
+	
 /*----------------------------------------------------------------------------*
  * Public-Facing Functionality
  *----------------------------------------------------------------------------*/

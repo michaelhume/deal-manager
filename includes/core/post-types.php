@@ -13,8 +13,8 @@
  *  @todo add help screens
  *  @todo modify meta boxes as required
  */
-
-class MH_Deal_Manager_Post_Types{
+if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
+	class MH_Deal_Manager_Post_Types{
     
     
     /**
@@ -115,7 +115,7 @@ class MH_Deal_Manager_Post_Types{
             'hierarchical'       => true,
             'menu_position'      => 11,
             'menu_icon'			 => 'dashicons-portfolio',
-            'supports'           => array( 'title', 'editor', 'thumbnail', 'excerpt', 'revisions', 'page-attributes', 'comments' ),
+            'supports'           => array( 'title', 'editor', 'thumbnail', 'revisions', 'page-attributes', 'comments' ),
             'taxonomies'         => array( 'deal-status', 'deal-source', 'deal-type' ),
             'map_meta_cap'       => true,
             'capability_type'    => array( 'deal', 'deals' ),
@@ -643,7 +643,7 @@ class MH_Deal_Manager_Post_Types{
           );  
     } 
 }    	
-
+}
 $obj = new MH_Deal_Manager_Post_Types();
 $obj = null;
 ?>

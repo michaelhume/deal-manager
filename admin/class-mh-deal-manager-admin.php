@@ -17,7 +17,8 @@
  * @package MH_Deal_Manager_Admin
  * @author  Michael Hume <m.p.hume@gmail.com>
  */
-class MH_Deal_Manager_Admin {
+if ( ! class_exists( 'MH_Deal_Manager_Admin' ) ) {
+	class MH_Deal_Manager_Admin {
 
 	/**
 	 * Instance of this class.
@@ -189,13 +190,9 @@ class MH_Deal_Manager_Admin {
 		 *
 		 *        Administration Menus: http://codex.wordpress.org/Administration_Menus
 		 *
-		 * @TODO:
-		 *
-		 * - Change 'Page Title' to the title of your plugin admin page
-		 * - Change 'Menu Text' to the text for menu item for the plugin settings page
-		 * - Change 'manage_options' to the capability you see fit
-		 *   For reference: http://codex.wordpress.org/Roles_and_Capabilities
+				 *   For reference: http://codex.wordpress.org/Roles_and_Capabilities
 		 */
+		/*
 		$this->plugin_screen_hook_suffix = add_options_page(
 			__( 'Deal Manager Settings', $this->plugin_slug ),
 			__( 'Deal Manager', $this->plugin_slug ),
@@ -203,6 +200,30 @@ class MH_Deal_Manager_Admin {
 			$this->plugin_slug,
 			array( $this, 'display_plugin_admin_page' )
 		);
+		*/
+		// create a new top level menu for all options
+        $this->plugin_screen_hook_suffix[] = 
+                add_menu_page( 
+                            __('Deal Manager Configuration', $this->plugin_slug ),      // Page Title
+                            __('Deal Manager', $this->plugin_slug),                     // Menu Title
+                            'administrator',                                            // capability
+                            $this->plugin_slug . '-main',                               // page slug
+                            array( $this, 'display_main_admin_page'),            // callback function for display
+                            'dashicons-lightbulb' ,               						// icon url
+                            '99.1'                               	                    // position
+                            );
+                            
+        // add submenu to dashboard
+        $this->plugin_screen_hook_suffix[] = 
+                add_submenu_page( 
+                            $this->plugin_slug . '-main',                       // top level slug
+                            'Shortcodes',                                       // Page title  
+                            'Shortcodes',                                       // menu title
+                            'manage_options',                                  // capability
+                            $this->plugin_slug . '-shortcodes',                 // page slug
+                            array( $this, 'display_shortcodes_admin_page' )             // callback to handle display
+                            );
+
 
 	}
 
@@ -211,8 +232,17 @@ class MH_Deal_Manager_Admin {
 	 *
 	 * @since    1.0.0
 	 */
-	public function display_plugin_admin_page() {
-		include_once( 'views/admin.php' );
+	public function display_main_admin_page() {
+		include_once( 'views/main.php' );
+	}
+	
+	/**
+	 * Render the shortcodes settings page for this plugin.
+	 *
+	 * @since    1.0.0
+	 */
+	public function display_shortcodes_admin_page() {
+		include_once( 'views/shortcodes.php' );
 	}
 
 	/**
@@ -257,4 +287,5 @@ class MH_Deal_Manager_Admin {
 		// @TODO: Define your filter hook callback here
 	}
 
+}
 }

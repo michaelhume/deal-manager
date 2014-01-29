@@ -10,17 +10,18 @@
  */
 
 /**
- * Plugin class. This class should ideally be used to work with the
- * public-facing side of the WordPress site.
- *
- * If you're interested in introducing administrative or dashboard
- * functionality, then refer to `class-plugin-name-admin.php`
+ * 
+ *	Actions:    http://codex.wordpress.org/Plugin_API#Actions
+ *	Reference:  http://codex.wordpress.org/Plugin_API/Action_Reference
+ *	Filters: http://codex.wordpress.org/Plugin_API#Filters
+ *  Reference:  http://codex.wordpress.org/Plugin_API/Filter_Reference
  *
  *
  * @package MH_Deal_Manager
  * @author  Michael Hume <m.p.hume@gmail.com>
  */
-class MH_Deal_Manager {
+if ( ! class_exists( 'MH_Deal_Manager' ) ) {
+	class MH_Deal_Manager {
 
 	/**
 	 * Plugin version, used for cache-busting of style and script file references.
@@ -74,18 +75,14 @@ class MH_Deal_Manager {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 		
-		// add custom theme support
+
+		// setup the plugin
+		add_action( 'after_setup_theme', array( $this, 'check_plugin_dependancies' ) );
 		add_action( 'after_setup_theme', array( $this, 'add_theme_support' ) );
-		
-		// setup custom post types
 		add_action( 'after_setup_theme', array( $this, 'load_custom_post_types' ) );
 		
-
-		/* Define custom functionality.
-		 * Refer To http://codex.wordpress.org/Plugin_API#Hooks.2C_Actions_and_Filters
-		 */
-		add_action( '@TODO', array( $this, 'action_method_name' ) );
-		add_filter( '@TODO', array( $this, 'filter_method_name' ) );
+		// add shortcodes
+		//add_shortcode( 'short_code_here', array( $this, 'shortcode_handler' ) );
 
 	}
 
@@ -117,6 +114,97 @@ class MH_Deal_Manager {
 		return self::$instance;
 	}
 	
+	
+	/**
+	 * check_plugin_dependancies function.
+	 *
+	 *	Check for our required plugins
+	 *
+	 *	@see http://tgmpluginactivation.com/
+	 * 
+	 * @access public
+	 * @return void
+	 */
+	public function check_plugin_dependancies(){
+	
+		// check plugin dependancies
+		$required = array(
+							'groups' => 'Group_Group',
+						);
+		
+		foreach ( $required as $plugin => $class ){
+			if ( !class_exists ( $class ) ){
+				require_once MHDM_PLUGIN_DIR . '/admin/includes/plugin/class-tgm-plugin-activation.php';
+				add_action( 'tgmpa_register', array( $this, 'install_dependancies' ) );
+				break;
+			}	
+		}
+	}
+	
+	/**
+	 * install_plugins function.
+	 *
+	 *	@see http://tgmpluginactivation.com/
+	 * 
+	 * @access public
+	 * @return void
+	 */
+	public function install_dependancies(){
+		
+		$plugins = array(
+					array(
+						'name'     				=> 'groups', 
+						'slug'     				=> 'groups', 
+						'source'   				=> MHDM_PLUGIN_DIR . '/admin/includes/dependancies/groups.1.4.6.zip', 
+						'required' 				=> true, 
+						'version' 				=> '1.4.6', 
+						'force_activation' 		=> true, 
+						'force_deactivation' 	=> true, 
+						'external_url' 			=> '', 
+					),
+			
+					// This is an example of how to include a plugin from the WordPress Plugin Repository
+					array(
+						'name' 		=> 'Capability Manager Enhanced',
+						'slug' 		=> 'capability-manager-enhanced',
+						'required' 	=> false,
+					),
+				);
+		
+		$config = array(
+				'domain'       		=> $this->plugin_slug,         								// Text domain - likely want to be the same as your theme.
+				'default_path' 		=> MHDM_PLUGIN_DIR . '/admin/includes/dependancies/',       // Default absolute path to pre-packaged plugins
+				'parent_menu_slug' 	=> 'themes.php', 				// Default parent menu slug
+				'parent_url_slug' 	=> 'themes.php', 				// Default parent URL slug
+				'menu'         		=> 'install-required-plugins', 	// Menu slug
+				'has_notices'      	=> true,                       	// Show admin notices or not
+				'is_automatic'    	=> true,					   	// Automatically activate plugins after installation or not
+				'message' 			=> '',							// Message to output right before the plugins table
+				'strings'      		=> array(
+					'page_title'                       			=> __( 'Install Required Plugins', $this->plugin_slug ),
+					'menu_title'                       			=> __( 'Install Plugins', $this->plugin_slug ),
+					'installing'                       			=> __( 'Installing Plugin: %s', $this->plugin_slug ), // %1$s = plugin name
+					'oops'                             			=> __( 'Something went wrong with the plugin API.', $this->plugin_slug ),
+					'notice_can_install_required'     			=> _n_noop( 'Deal Manager requires the following plugin: %1$s.', 'This theme requires the following plugins: %1$s.' ), // %1$s = plugin name(s)
+					'notice_can_install_recommended'			=> _n_noop( 'Deal Manager recommends the following plugin: %1$s.', 'This theme recommends the following plugins: %1$s.' ), // %1$s = plugin name(s)
+					'notice_cannot_install'  					=> _n_noop( 'Sorry, but you do not have the correct permissions to install the %s plugin. Contact the administrator of this site for help on getting the plugin installed.', 'Sorry, but you do not have the correct permissions to install the %s plugins. Contact the administrator of this site for help on getting the plugins installed.' ), // %1$s = plugin name(s)
+					'notice_can_activate_required'    			=> _n_noop( 'The following required plugin is currently inactive: %1$s.', 'The following required plugins are currently inactive: %1$s.' ), // %1$s = plugin name(s)
+					'notice_can_activate_recommended'			=> _n_noop( 'The following recommended plugin is currently inactive: %1$s.', 'The following recommended plugins are currently inactive: %1$s.' ), // %1$s = plugin name(s)
+					'notice_cannot_activate' 					=> _n_noop( 'Sorry, but you do not have the correct permissions to activate the %s plugin. Contact the administrator of this site for help on getting the plugin activated.', 'Sorry, but you do not have the correct permissions to activate the %s plugins. Contact the administrator of this site for help on getting the plugins activated.' ), // %1$s = plugin name(s)
+					'notice_ask_to_update' 						=> _n_noop( 'The following plugin needs to be updated to its latest version to ensure maximum compatibility with this theme: %1$s.', 'The following plugins need to be updated to their latest version to ensure maximum compatibility with this theme: %1$s.' ), // %1$s = plugin name(s)
+					'notice_cannot_update' 						=> _n_noop( 'Sorry, but you do not have the correct permissions to update the %s plugin. Contact the administrator of this site for help on getting the plugin updated.', 'Sorry, but you do not have the correct permissions to update the %s plugins. Contact the administrator of this site for help on getting the plugins updated.' ), // %1$s = plugin name(s)
+					'install_link' 					  			=> _n_noop( 'Begin installing plugin', 'Begin installing plugins' ),
+					'activate_link' 				  			=> _n_noop( 'Activate installed plugin', 'Activate installed plugins' ),
+					'return'                           			=> __( 'Return to Required Plugins Installer', $this->plugin_slug ),
+					'plugin_activated'                 			=> __( 'Plugin activated successfully.', $this->plugin_slug ),
+					'complete' 									=> __( 'All plugins installed and activated successfully. %s', $this->plugin_slug ), // %1$s = dashboard link
+					'nag_type'									=> 'error' // Determines admin notice type - can only be 'updated' or 'error'
+				)
+			);
+			
+		tgmpa( $plugins, $config );
+
+	}
 	
 	/**
 	 * load_custom_post_types function.
@@ -151,6 +239,21 @@ class MH_Deal_Manager {
     	);
 	}
 
+	/**
+	 * Function to handle [all-shortcodes]
+	 *
+	 *  Passes shortcode off to our shortcode class
+	 *
+	 *  @since    1.00.00
+	 *  @return     null
+	 */
+	
+	public function shortcode_handler( $atts, $content, $tag ){
+    	require_once( MHDM_PLUGIN_DIR . '/includes/classes/class-shortcodes.php' );
+    	return MHDM_Shortcodes::shortcode( $atts, $content, $tag );
+    	
+	}
+	
 	/**
 	 * Fired when the plugin is activated.
 	 *
@@ -348,5 +451,5 @@ class MH_Deal_Manager {
 	public function filter_method_name() {
 		// @TODO: Define your filter hook callback here
 	}
-
+}
 }

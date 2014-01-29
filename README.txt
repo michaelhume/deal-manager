@@ -1,14 +1,13 @@
-=== @TODO: Plugin Name ===
-Contributors: (this should be a list of wordpress.org userids)
-Donate link: http://example.com/
-Tags: comments, spam
-Requires at least: 3.5.1
-Tested up to: 3.6
+=== Deal Manager ===
+Contributors: nanomike
+Tags: deal, mortgage broker, professional, document management, client, 
+Requires at least: 3.8.1
+Tested up to: 3.8.1
 Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Here is a short description of the plugin.  This should be no more than 150 characters.  No markup here.
+Deal Manager is a plugic to assist professionals in the deal process. It helps manage clients requirements and documentation.
 
 == Description ==
 
@@ -60,7 +59,7 @@ e.g.
 
 = Using FTP =
 
-1. Download `plugin-name.zip`
+1. Download `deal-manager.zip`
 2. Extract the `plugin-name` directory to your computer
 3. Upload the `plugin-name` directory to the `/wp-content/plugins/` directory
 4. Activate the plugin in the Plugin dashboard

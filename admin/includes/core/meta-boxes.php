@@ -192,6 +192,7 @@ if ( ! class_exists( 'MH_Deal_Manager_MetaBoxes' ) ) {
                 			'clone'			=> true,
 			                'placeholder'   => 'Select Client',
 							'field_type'    => 'select_advanced',
+                			'multiple'		=> false,
                 			'query_args'    => array(
 					                				'role' => ''
 					                                ),
@@ -386,22 +387,11 @@ if ( ! class_exists( 'MH_Deal_Manager_MetaBoxes' ) ) {
                 			'type' 			=> 'post',
                 			'post_type'		=> 'property',
                             'field_type'    => 'select_advanced',
+                            'placeholder'	=> 'Select Property',
                             'query_args'    => array(),
 
                         ),
                  ), // end fields
-            	'validation' => array(
-                    'rules' => array(
-									$this->plugin_slug . '_property' => array(
-		                				'required'  => false,
-		                                ),                    
-                		),
-            		'messages' => array(
-            						$this->plugin_slug . '_property' => array(
-		                				'required'  => '',
-		                                ),
-                		)
-                    )// end validation
         		);// end deal-required meta 	        		
     
     } // end deal meta

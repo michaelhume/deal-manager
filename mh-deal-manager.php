@@ -44,6 +44,14 @@ if ( ! defined( 'MHDM_PLUGIN_URL' ) )
 // get rid of the tempting file editor!
 if ( !defined ('DISALLOW_FILE_EDIT') ) 
  	define( 'DISALLOW_FILE_EDIT', true ); 
+ 
+ // pull in the meta-box functionality
+if ( !defined ( 'RWMB_URL' ) )
+    define( 'RWMB_URL', MHDM_PLUGIN_URL .  '/admin/includes/plugin/meta-box/' );
+
+if ( !defined ( 'RWMB_DIR' ) )
+    define( 'RWMB_DIR', MHDM_PLUGIN_DIR . '/admin/includes/plugin/meta-box/' );
+
 	
 /*----------------------------------------------------------------------------*
  * Public-Facing Functionality

@@ -423,6 +423,8 @@ if ( ! class_exists( 'MH_Deal_Manager' ) ) {
 				update_option( $slug . '-' .'client-group-cap', $client_cap_id );
 				update_option( $slug . '-' .'broker-group-cap', $broker_cap_id );
 			}
+		
+			flush_rewrite_rules();	
 		}
 	
 		/**
@@ -461,6 +463,8 @@ if ( ! class_exists( 'MH_Deal_Manager' ) ) {
 				}
 	
 			}
+			
+			flush_rewrite_rules();
 		}
 	
 		/**

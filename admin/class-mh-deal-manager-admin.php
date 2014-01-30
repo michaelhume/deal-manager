@@ -71,7 +71,7 @@ if ( ! class_exists( 'MH_Deal_Manager_Admin' ) ) {
 			add_action( 'admin_menu', array( $this, 'add_plugin_admin_menu' ) );
 	
 			// Add an action link pointing to the options page.
-			$plugin_basename = plugin_basename( plugin_dir_path( __DIR__ ) . $this->plugin_slug . '.php' );
+			$plugin_basename = plugin_basename( MHDM_PLUGIN_DIR . '/' . $this->plugin_slug . '.php' );
 			add_filter( 'plugin_action_links_' . $plugin_basename, array( $this, 'add_action_links' ) );
 			
 			// load custom meta boxes
@@ -201,7 +201,7 @@ if ( ! class_exists( 'MH_Deal_Manager_Admin' ) ) {
 	                            'administrator',                                            // capability
 	                            $this->plugin_slug . '-main',                               // page slug
 	                            array( $this, 'display_main_admin_page'),            		// callback function for display
-	                            'dashicons-lightbulb' ,               						// icon url
+	                            'dashicons-share-alt' ,               						// icon url
 	                            '99.1'                               	                    // position
 	                            );
 	                            
@@ -246,7 +246,7 @@ if ( ! class_exists( 'MH_Deal_Manager_Admin' ) ) {
 	
 			return array_merge(
 				array(
-					'settings' => '<a href="' . admin_url( 'options-general.php?page=' . $this->plugin_slug ) . '">' . __( 'Settings', $this->plugin_slug ) . '</a>'
+					'settings' => '<a href="' . admin_url( 'admin.php?page=' . $this->plugin_slug .'-main' ) . '">' . __( 'Settings', $this->plugin_slug ) . '</a>'
 				),
 				$links
 			);

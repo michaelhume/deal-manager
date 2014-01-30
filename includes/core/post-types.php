@@ -56,9 +56,6 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 	    	if ( !is_array( $post_types[0] ) ) {
 	    		return;
 	    	}
-	
-			// flush rewrite rules after switching themes
-	        add_action('after_switch_theme', array( $this, 'flush_rewrite'), 15);
 	        
 	        if ( in_array( 'deal', $post_types[0] ) ){
 	            add_action('init', array( $this, 'register_deal'));
@@ -109,7 +106,8 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 	            'show_ui'            => true,
 	            'show_in_menu'       => true,
 	            'query_var'          => true,
-	            'rewrite'            => array( 'slug' => 'deals', 'with_front' => false ),
+	           // 'rewrite'            => array( 'slug' => 'deals', 'with_front' => false ),
+	            'rewrite'            => false,
 	            'has_archive'        => true,
 	            'hierarchical'       => true,
 	            'menu_position'      => 11,
@@ -122,6 +120,7 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 	        
 	        register_post_type( 'deal', $args );
 	        $this->set_capabilities('deal');
+	         
 	        
 		}
 		
@@ -240,7 +239,7 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 	            'show_ui'            => true,
 	            'show_in_menu'       => true,
 	            'query_var'          => true,
-	            'rewrite'            => array( 'slug' => 'deals/requirement', 'with_front' => false ),
+	            'rewrite'            => array( 'slug' => 'requirement', 'with_front' => false ),
 	            'has_archive'        => true,
 	            'hierarchical'       => false,
 	            'menu_position'      => 11,
@@ -253,6 +252,7 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 	        
 	        register_post_type( 'requirement', $args );
 	        $this->set_capabilities('requirement');
+	         
 	        
 		}
 		
@@ -362,6 +362,7 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 	        
 	        register_post_type( 'associate', $args );
 	        $this->set_capabilities('associate');
+	         
 		}
 		
 		/**
@@ -460,6 +461,7 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 	        
 	        register_post_type( 'property', $args );
 	        $this->set_capabilities('property');
+	         
 		}
 		
 		/**
@@ -546,19 +548,7 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 	        }
 	
 	    }
-	
-	// !--------------- Helpers
-	
-	     /**
-	     * flush_rewrite function.
-	     * 
-	     * @access public
-	     * @return void
-	     */
-	    public function flush_rewrite(){
-	        flush_rewrite_rules();
-	    }
-	    
+		    
 	// --- Private helper functions -->    
 	    
 	    /**

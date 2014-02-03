@@ -269,7 +269,7 @@ if ( ! class_exists( 'MH_Deal_Manager' ) ) {
 		 */
 		
 		public function shortcode_handler( $atts, $content, $tag ){
-	    	require_once( MHDM_PLUGIN_DIR . '/includes/classes/class-shortcodes.php' );
+	    	require_once( MHDM_PLUGIN_DIR . '/includes/core/shortcodes.php' );
 	    	return MHDM_Shortcodes::shortcode( $atts, $content, $tag );
 	    	
 		}

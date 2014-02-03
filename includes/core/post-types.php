@@ -99,7 +99,7 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 	    	
 	    	$cpt = new self;
 	    	
-		    $cpt->register_deal_cpt();
+	    	$cpt->register_deal_cpt();
 		    $cpt->register_requirement_cpt();
 		    $cpt->register_associate_cpt();
 		    $cpt->register_property_cpt();

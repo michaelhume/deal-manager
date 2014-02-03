@@ -85,7 +85,7 @@ if ( ! class_exists( 'MH_Deal_Manager' ) ) {
 			//add_shortcode( 'short_code_here', array( $this, 'shortcode_handler' ) );
 	
 		}
-	
+
 		/**
 		 * Return the plugin slug.
 		 *
@@ -423,7 +423,11 @@ if ( ! class_exists( 'MH_Deal_Manager' ) ) {
 				update_option( $slug . '-' .'client-group-cap', $client_cap_id );
 				update_option( $slug . '-' .'broker-group-cap', $broker_cap_id );
 			}
-		
+			
+			require_once( MHDM_PLUGIN_DIR . '/includes/core/post-types.php' );	
+			//$cpt = new MH_Deal_Manager_Post_Types;
+			//$cpt->register_post_types_now();
+			MH_Deal_Manager_Post_Types::register_post_types_now();
 			flush_rewrite_rules();	
 		}
 	

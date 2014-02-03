@@ -58,8 +58,8 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 	    	}
 	        
 	        if ( in_array( 'deal', $post_types[0] ) ){
-	            add_action('init', array( $this, 'register_deal'));
-	            add_action('init', array( $this, 'deal_taxonomies'), 0);
+	            add_action('init', array( $this, 'register_deal_cpt'));
+	            add_action('init', array( $this, 'register_deal_taxonomy'), 0);
 	            add_action('admin_head', array( $this, 'add_deal_help'));
 	
 	            // remove default taxonomy box 
@@ -68,25 +68,47 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 	        }
 	        
 	        if ( in_array( 'requirement', $post_types[0] ) ){
-	            add_action('init', array( $this, 'register_requirement'));
-	            add_action('init', array( $this, 'requirement_taxonomies'), 0);
+	            add_action('init', array( $this, 'register_requirement_cpt'));
+	            add_action('init', array( $this, 'register_requirement_taxonomy'), 0);
 	            add_action('admin_head', array( $this, 'add_requirement_help'));            
 	        }
 	        
 	        if ( in_array( 'associate', $post_types[0] ) ){
-	            add_action('init', array( $this, 'register_associate'));
-	            add_action('init', array( $this, 'associate_taxonomies'), 0);
+	            add_action('init', array( $this, 'register_associate_cpt'));
+	            add_action('init', array( $this, 'register_associate_taxonomy'), 0);
 	            add_action('admin_head', array( $this, 'add_associate_help'));  
 	        }
 	        
 	        if ( in_array( 'property', $post_types[0] ) ){
-	            add_action('init', array( $this, 'register_property'));
-	            add_action('init', array( $this, 'property_taxonomies'), 0);
+	            add_action('init', array( $this, 'register_property_cpt'));
+	            add_action('init', array( $this, 'register_property_taxonomy'), 0);
 	            add_action('admin_head', array( $this, 'add_property_help'));
 	        }
 	
 			       
 	    }// end __construct function
+	    
+	    
+	    /**
+	     * register_post_types_now function.
+	     * 
+	     * @access public
+	     * @return void
+	     */
+	    public static function register_post_types_now(){
+	    	
+	    	$cpt = new self;
+	    	
+		    $cpt->register_deal_cpt();
+		    $cpt->register_requirement_cpt();
+		    $cpt->register_associate_cpt();
+		    $cpt->register_property_cpt();
+		    
+		    $cpt->register_deal_taxonomy();
+		    $cpt->register_requirement_taxonomy();
+		    $cpt->register_associate_taxonomy();
+		    $cpt->register_property_taxonomy();
+	    }
 	    
 	// !--------------- Deal Component
 	    
@@ -97,7 +119,7 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 	     * @see register_post_type
 	     * @since 1.0.0
 	     */	
-	    public function register_deal(){
+	    public function register_deal_cpt(){
 	        
 	        $args = array(
 	            'labels'             => $this->create_cpt_labels( 'Deal', 'Deals' ),
@@ -107,7 +129,7 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 	            'show_in_menu'       => true,
 	            'query_var'          => true,
 	           // 'rewrite'            => array( 'slug' => 'deals', 'with_front' => false ),
-	            'rewrite'            => false,
+	           // 'rewrite'            => false,
 	            'has_archive'        => true,
 	            'hierarchical'       => true,
 	            'menu_position'      => 11,
@@ -132,7 +154,7 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 		 * @see register_taxonomy
 		 * @since 1.0.0
 		 */
-		public function deal_taxonomies() {
+		public function register_deal_taxonomy() {
 		  
 	    	$args = array(
 	    		'hierarchical'      => true,
@@ -230,7 +252,7 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 	     * @see register_post_type
 	     * @since 1.0.0
 	     */
-	    public function register_requirement(){
+	    public function register_requirement_cpt(){
 	        
 	        $args = array(
 	            'labels'             => $this->create_cpt_labels('Requirement'),
@@ -264,7 +286,7 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 		 * @see register_taxonomy
 		 * @since 1.0.0
 		 */
-		public function requirement_taxonomies() {
+		public function register_requirement_taxonomy() {
 	
 	    	$args = array(
 	    		'hierarchical'      => false,
@@ -340,7 +362,7 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 	     * @see register_post_type
 	     * @since 1.0.0
 	     */
-	    public function register_associate(){
+	    public function register_associate_cpt(){
 	         
 	        $args = array(
 	            'labels'             => $this->create_cpt_labels('Associate'),
@@ -373,7 +395,7 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 		 * @see register_taxonomy
 		 * @since 1.0.0
 		 */
-		public function associate_taxonomies() {
+		public function register_associate_taxonomy() {
 	  
 	    	$args = array(
 	    		'hierarchical'      => true,
@@ -439,7 +461,7 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 	     * @see register_post_type
 	     * @since 1.0.0
 	     */	
-	    public function register_property(){
+	    public function register_property_cpt(){
 	                
 	        $args = array(
 	            'labels'             => $this->create_cpt_labels('Property', 'Properties'),
@@ -472,7 +494,7 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 		 * @see register_taxonomy
 		 * @since 1.0.0
 		 */
-		public function property_taxonomies() {
+		public function register_property_taxonomy() {
 	
 		 	$args = array(
 	    		'hierarchical'      => false,

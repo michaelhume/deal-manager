@@ -50,40 +50,29 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 	     * @return void
 	     */
 	    public function register_post_types(){
-	        
-	        $post_types = get_theme_support($this->plugin_slug .'-post-types'); 
+
+			// register deal cpt	        
+			add_action('init', array( $this, 'register_deal_cpt'));
+			add_action('init', array( $this, 'register_deal_taxonomy'), 0);
+			add_action('admin_head', array( $this, 'add_deal_help'));
 			
-	    	if ( !is_array( $post_types[0] ) ) {
-	    		return;
-	    	}
+            // remove default taxonomy box 
+			add_action('admin_menu', array( $this, 'remove_deal_type_taxonomy_box')); 
+
+			// register requirement cpt
+            add_action('init', array( $this, 'register_requirement_cpt'));
+            add_action('init', array( $this, 'register_requirement_taxonomy'), 0);
+            add_action('admin_head', array( $this, 'add_requirement_help'));            
 	        
-	        if ( in_array( 'deal', $post_types[0] ) ){
-	            add_action('init', array( $this, 'register_deal_cpt'));
-	            add_action('init', array( $this, 'register_deal_taxonomy'), 0);
-	            add_action('admin_head', array( $this, 'add_deal_help'));
-	
-	            // remove default taxonomy box 
-	            // add_action('admin_menu', array( $this, 'remove_service_request_taxonomy_box')); 
-				add_action('admin_menu', array( $this, 'remove_deal_type_taxonomy_box')); 
-	        }
-	        
-	        if ( in_array( 'requirement', $post_types[0] ) ){
-	            add_action('init', array( $this, 'register_requirement_cpt'));
-	            add_action('init', array( $this, 'register_requirement_taxonomy'), 0);
-	            add_action('admin_head', array( $this, 'add_requirement_help'));            
-	        }
-	        
-	        if ( in_array( 'associate', $post_types[0] ) ){
-	            add_action('init', array( $this, 'register_associate_cpt'));
-	            add_action('init', array( $this, 'register_associate_taxonomy'), 0);
-	            add_action('admin_head', array( $this, 'add_associate_help'));  
-	        }
-	        
-	        if ( in_array( 'property', $post_types[0] ) ){
-	            add_action('init', array( $this, 'register_property_cpt'));
-	            add_action('init', array( $this, 'register_property_taxonomy'), 0);
-	            add_action('admin_head', array( $this, 'add_property_help'));
-	        }
+			// register associate cpt
+            add_action('init', array( $this, 'register_associate_cpt'));
+            add_action('init', array( $this, 'register_associate_taxonomy'), 0);
+            add_action('admin_head', array( $this, 'add_associate_help'));  
+
+			// register property cpt	        
+            add_action('init', array( $this, 'register_property_cpt'));
+            add_action('init', array( $this, 'register_property_taxonomy'), 0);
+            add_action('admin_head', array( $this, 'add_property_help'));
 	
 			       
 	    }// end __construct function
@@ -128,8 +117,7 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 	            'show_ui'            => true,
 	            'show_in_menu'       => true,
 	            'query_var'          => true,
-	           // 'rewrite'            => array( 'slug' => 'deals', 'with_front' => false ),
-	           // 'rewrite'            => false,
+	            'rewrite'            => array( 'slug' => 'deals', 'with_front' => false ),
 	            'has_archive'        => true,
 	            'hierarchical'       => true,
 	            'menu_position'      => 11,
@@ -206,9 +194,9 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 	        
 	        // Setup help tabs
 	        $tabs['definitions'] = array(
-	            'id'      => $screen->post_type . '-1',                              //unique id for the tab
-	            'title'   => 'Definitions',                         //unique visible title for the tab
-	            'content' => '<h3>Definitions</h3>'.          //actual help text
+	            'id'      => $screen->post_type . '-1',						//unique id for the tab
+	            'title'   => 'Definitions',                         		//unique visible title for the tab
+	            'content' => '<h3>Definitions</h3>'.          				//actual help text
 	                            '<p>This page defines a deal - the top level item in our package</p>'.
 	                            '<ol>'.
 	                                '<li>Step 1</li>'.

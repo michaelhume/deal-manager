@@ -74,8 +74,11 @@ if ( ! class_exists( 'MH_Deal_Manager_Admin' ) ) {
 			$plugin_basename = plugin_basename( MHDM_PLUGIN_DIR . '/' . $this->plugin_slug . '.php' );
 			add_filter( 'plugin_action_links_' . $plugin_basename, array( $this, 'add_action_links' ) );
 			
-			// load custom meta boxes
-			add_action( 'after_setup_theme', array( $this, 'setup_meta_boxes' ) );				
+			// admin setup
+			add_action( 'after_setup_theme', array( $this, 'setup_meta_boxes' ) );	
+			add_action( 'after_setup_theme', array( $this, 'check_plugin_dependancies' ) );
+			add_action( 'after_setup_theme', array( $this, 'extended_user_profile' ) );
+			
 	
 			/*
 			 * Define custom functionality.
@@ -124,10 +127,22 @@ if ( ! class_exists( 'MH_Deal_Manager_Admin' ) ) {
 		 * @return void
 		 */
 		public function setup_meta_boxes(){
-			require_if_theme_supports( $this->plugin_slug . '-custom-meta', MHDM_PLUGIN_DIR . '/admin/includes/plugin/meta-box/meta-box.php' );
-			require_if_theme_supports( $this->plugin_slug . '-custom-meta', MHDM_PLUGIN_DIR . '/admin/includes/core/meta-boxes.php' );
+			require_once( MHDM_PLUGIN_DIR . '/admin/includes/plugin/meta-box/meta-box.php' );
+			require_once( MHDM_PLUGIN_DIR . '/admin/includes/extend/meta-boxes.php' );
 		}
 	
+		/**
+		 * extended_user_profile function.
+		 * 
+		 * @access public
+		 * @return void
+		 * @since    1.0.0
+		 */
+		public function extended_user_profile(){
+			require_once( MHDM_PLUGIN_DIR . '/admin/includes/extend/users.php' );	
+		}
+		
+		
 		/**
 		 * Register and enqueue admin-specific style sheet.
 		 *
@@ -169,6 +184,99 @@ if ( ! class_exists( 'MH_Deal_Manager_Admin' ) ) {
 		}
 	
 		/**
+		 * check_plugin_dependancies function.
+		 *
+		 *	Check for our required plugins
+		 *
+		 *	@see http://tgmpluginactivation.com/
+		 * 
+		 * @access public
+		 * @return void
+		 * @since    1.0.0
+		 */
+		public function check_plugin_dependancies(){
+		
+			// check plugin dependancies
+			$required = array(
+							'groups' => 'Group_Group',
+							);
+			
+			foreach ( $required as $plugin => $class ){
+				if ( !class_exists ( $class ) ){
+					require_once MHDM_PLUGIN_DIR . '/admin/includes/plugin/class-tgm-plugin-activation.php';
+					add_action( 'tgmpa_register', array( $this, 'install_dependancies' ) );
+					break;
+				}	
+			}
+		}
+		
+		/**
+		 * install_plugins function.
+		 *
+		 *	@see http://tgmpluginactivation.com/
+		 * 
+		 * @access public
+		 * @return void
+		 * @since    1.0.0
+		 */
+		public function install_dependancies(){
+			
+			$plugins = array(
+						array(
+							'name'     				=> 'groups', 
+							'slug'     				=> 'groups', 
+							'source'   				=> 'groups.1.4.6.zip', 
+							'required' 				=> true, 
+							'version' 				=> '1.4.6', 
+							'force_activation' 		=> false, 
+							'force_deactivation' 	=> true, 
+							'external_url' 			=> '', 
+						),
+				
+						// This is an example of how to include a plugin from the WordPress Plugin Repository
+						array(
+							'name' 		=> 'Capability Manager Enhanced',
+							'slug' 		=> 'capability-manager-enhanced',
+							'required' 	=> false,
+						),
+					);
+			
+			$config = array(
+					'domain'       		=> $this->plugin_slug,         								// Text domain - likely want to be the same as your theme.
+					'default_path' 		=> MHDM_PLUGIN_DIR . '/admin/includes/plugin/dependancies/',       // Default absolute path to pre-packaged plugins
+					'parent_menu_slug' 	=> $this->plugin_slug . '-main', 							// Default parent menu slug
+					'parent_url_slug' 	=> 'admin.php', 											// Default parent URL slug
+					'menu'         		=> 'install-required-plugins', 	// Menu slug
+					'has_notices'      	=> true,                       	// Show admin notices or not
+					'is_automatic'    	=> true,					   	// Automatically activate plugins after installation or not
+					'message' 			=> '',							// Message to output right before the plugins table
+					'strings'      		=> array(
+						'page_title'                       			=> __( 'Install Required Plugins', $this->plugin_slug ),
+						'menu_title'                       			=> __( 'Install Plugins', $this->plugin_slug ),
+						'installing'                       			=> __( 'Installing Plugin: %s', $this->plugin_slug ), // %1$s = plugin name
+						'oops'                             			=> __( 'Something went wrong with the plugin API.', $this->plugin_slug ),
+						'notice_can_install_required'     			=> _n_noop( 'Deal Manager requires the following plugin: %1$s.', 'This theme requires the following plugins: %1$s.' ), // %1$s = plugin name(s)
+						'notice_can_install_recommended'			=> _n_noop( 'Deal Manager recommends the following plugin: %1$s.', 'This theme recommends the following plugins: %1$s.' ), // %1$s = plugin name(s)
+						'notice_cannot_install'  					=> _n_noop( 'Sorry, but you do not have the correct permissions to install the %s plugin. Contact the administrator of this site for help on getting the plugin installed.', 'Sorry, but you do not have the correct permissions to install the %s plugins. Contact the administrator of this site for help on getting the plugins installed.' ), // %1$s = plugin name(s)
+						'notice_can_activate_required'    			=> _n_noop( 'The following required plugin is currently inactive: %1$s.', 'The following required plugins are currently inactive: %1$s.' ), // %1$s = plugin name(s)
+						'notice_can_activate_recommended'			=> _n_noop( 'The following recommended plugin is currently inactive: %1$s.', 'The following recommended plugins are currently inactive: %1$s.' ), // %1$s = plugin name(s)
+						'notice_cannot_activate' 					=> _n_noop( 'Sorry, but you do not have the correct permissions to activate the %s plugin. Contact the administrator of this site for help on getting the plugin activated.', 'Sorry, but you do not have the correct permissions to activate the %s plugins. Contact the administrator of this site for help on getting the plugins activated.' ), // %1$s = plugin name(s)
+						'notice_ask_to_update' 						=> _n_noop( 'The following plugin needs to be updated to its latest version to ensure maximum compatibility with this theme: %1$s.', 'The following plugins need to be updated to their latest version to ensure maximum compatibility with this theme: %1$s.' ), // %1$s = plugin name(s)
+						'notice_cannot_update' 						=> _n_noop( 'Sorry, but you do not have the correct permissions to update the %s plugin. Contact the administrator of this site for help on getting the plugin updated.', 'Sorry, but you do not have the correct permissions to update the %s plugins. Contact the administrator of this site for help on getting the plugins updated.' ), // %1$s = plugin name(s)
+						'install_link' 					  			=> _n_noop( 'Begin installing plugin', 'Begin installing plugins' ),
+						'activate_link' 				  			=> _n_noop( 'Activate installed plugin', 'Activate installed plugins' ),
+						'return'                           			=> __( 'Return to Required Plugins Installer', $this->plugin_slug ),
+						'plugin_activated'                 			=> __( 'Plugin activated successfully.', $this->plugin_slug ),
+						'complete' 									=> __( 'All plugins installed and activated successfully. %s', $this->plugin_slug ), // %1$s = dashboard link
+						'nag_type'									=> 'error' // Determines admin notice type - can only be 'updated' or 'error'
+					)
+				);
+				
+			tgmpa( $plugins, $config );
+	
+		}
+
+		/**
 		 * Register the administration menu for this plugin into the WordPress Dashboard menu.
 		 *
 		 * @since    1.0.0
@@ -184,15 +292,7 @@ if ( ! class_exists( 'MH_Deal_Manager_Admin' ) ) {
 			 *
 					 *   For reference: http://codex.wordpress.org/Roles_and_Capabilities
 			 */
-			/*
-			$this->plugin_screen_hook_suffix = add_options_page(
-				__( 'Deal Manager Settings', $this->plugin_slug ),
-				__( 'Deal Manager', $this->plugin_slug ),
-				'manage_options',
-				$this->plugin_slug,
-				array( $this, 'display_plugin_admin_page' )
-			);
-			*/
+		
 			// create a new top level menu for all options
 	        $this->plugin_screen_hook_suffix[] = 
 	                add_menu_page( 

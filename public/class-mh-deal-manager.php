@@ -79,6 +79,12 @@ if ( ! class_exists( 'MH_Deal_Manager' ) ) {
 			//add_action( 'after_setup_theme', array( $this, 'add_theme_support' ) );
 			add_action( 'after_setup_theme', array( $this, 'load_custom_post_types' ) );
 
+			// add filters for custom post types
+			add_filter( 'single_template', array( $this, 'get_single_cpt_template') );
+			add_filter( 'archive_template', array( $this, 'get_archive_cpt_template') );
+			
+			// play with the post titles
+			add_filter( 'wp_insert_post_data' , array( $this, 'set_cpt_post_title') , '99', 2 );
 			
 			// add shortcodes
 			//add_shortcode( 'short_code_here', array( $this, 'shortcode_handler' ) );
@@ -150,9 +156,6 @@ if ( ! class_exists( 'MH_Deal_Manager' ) ) {
 		public function load_custom_post_types(){
 			require_once( MHDM_PLUGIN_DIR . '/includes/core/post-types.php' );	
 		}
-		
-	
-		
 		
 		
 		/**
@@ -400,30 +403,159 @@ if ( ! class_exists( 'MH_Deal_Manager' ) ) {
 		}
 	
 	
-		
-		
 		/**
-		 * hook_method_name function.
+		 * get_single_cpt_tempalte function.
+		 *
 		 * 
+		 * @link http://codex.wordpress.org/Plugin_API/Filter_Reference/single_template
+		 * @since 1.0.0
 		 * @access public
+		 * @param mixed $template
 		 * @return void
-	 	 * @since    1.0.0
 		 */
-		public function hook_method_name() {
-			// @TODO: Define your action hook callback here
+		public function get_single_cpt_template( $template ) {
+		    global $post;
+			
+			$obj = MH_Deal_Manager_Post_Types::get_instance();
+			$types = $obj->get_registered_types();
+			
+			// Check for templates in our public views
+			if ( in_array( $post->post_type , $types ) ){
+			    if( file_exists( MHDM_PLUGIN_DIR. '/public/views/single-'. $post->post_type .'.php' ) )
+		        	$template = MHDM_PLUGIN_DIR . '/public/views/single-'. $post->post_type .'.php';
+		    }
+			return $template;
 		}
-	
+		
+		
 		/**
-		 * NOTE:  Filters are points of execution in which WordPress modifies data
-		 *        before saving it or sending it to the browser.
+		 * get_archive_cpt_tempalte function.
 		 *
-		 *        Filters: http://codex.wordpress.org/Plugin_API#Filters
-		 *        Reference:  http://codex.wordpress.org/Plugin_API/Filter_Reference
-		 *
-		 * @since    1.0.0
+		 *	Set CPT template, allow override by theme template system
+		 * 
+		 * @link http://codex.wordpress.org/Plugin_API/Filter_Reference/archive_template
+		 * @since 1.0.0
+		 * @access public
+		 * @param mixed $template
+		 * @return void
 		 */
-		public function filter_method_name() {
-			// @TODO: Define your filter hook callback here
+		public function get_archive_cpt_template( $template ) {
+		    global $post;
+			
+			$obj = MH_Deal_Manager_Post_Types::get_instance();
+			$types = $obj->get_registered_types();
+			
+			// Check for templates in our public views
+			if ( in_array( $post->post_type , $types ) ){
+			    if( file_exists( MHDM_PLUGIN_DIR. '/public/views/archive-'. $post->post_type .'.php' ) )
+		        	$template = MHDM_PLUGIN_DIR . '/public/views/archive-'. $post->post_type .'.php';
+		    }
+			return $template;
 		}
-	}
-}
+		
+		
+		/**
+		 * set_cpt_post_title function.
+		 * 
+		 * @link http://codex.wordpress.org/Plugin_API/Filter_Reference/wp_insert_post_data
+		 * @since 1.0.0
+		 * @access public
+		 * @param mixed $data
+		 * @param mixed $postarr
+		 * @return void
+		 */
+		public function set_cpt_post_title( $data , $postarr ) {
+		
+			switch ( $data['post_type'] ){
+			
+				case 'deal':
+
+					if ( isset( $postarr[ $this->plugin_slug . '_ref_number' ] ) ){
+		                $data['post_title'] = trim ( $postarr[ $this->plugin_slug . '_ref_number' ] );      
+		            }
+		            
+		            if ( isset( $postarr[ $this->plugin_slug . '_client' ] ) ){
+
+		            	$users = get_users( array( 'include' => $postarr[ $this->plugin_slug . '_client' ] ) );
+		            	$data['post_title'] .= ' - ';
+		            	
+		            	foreach( $users as $u ){
+			            	$data['post_title'] .= $u->display_name . ', ';
+		            	}
+			            
+			            $data['post_title'] = substr( $data['post_title'], 0, strlen( $data['post_title'] ) - 2 );
+		            }
+		            
+				break;
+				
+				case 'property':
+
+					if ( isset( $postarr[ $this->plugin_slug . '_address' ] ) ){
+		                $data['post_title'] = trim ( $postarr[ $this->plugin_slug . '_address' ] );      
+		            }
+		            
+		            if ( isset( $postarr[ $this->plugin_slug . '_city' ] ) ){
+		                $data['post_title'] .= ', ' . trim ( $postarr[ $this->plugin_slug . '_city' ] );      
+		            }
+
+		            if ( isset( $postarr[ $this->plugin_slug . '_province' ] ) ){
+		                $data['post_title'] .= ', ' . trim ( $postarr[ $this->plugin_slug . '_province' ] );      
+		            }
+		            
+		            if ( isset( $postarr[ $this->plugin_slug . '_postal_code' ] ) ){
+		                $data['post_title'] .= ', ' . trim ( $postarr[ $this->plugin_slug . '_postal_code' ] );      
+		            }
+		            
+				break;
+				
+				case 'associate':
+
+		            if ( isset( $postarr[ $this->plugin_slug . '_first_name' ] ) ){
+		                $data['post_title']  = trim ( $postarr[ $this->plugin_slug . '_first_name' ] );      
+		            }
+
+		            if ( isset( $postarr[ $this->plugin_slug . '_last_name' ] ) ){
+		                $data['post_title'] .= ' ' . trim ( $postarr[ $this->plugin_slug . '_last_name' ] );      
+		            }
+		            
+		            if ( isset( $postarr[ $this->plugin_slug . '_company' ] ) ){
+		                $data['post_title'] .= ' (' . trim ( array_pop ( $postarr[ $this->plugin_slug . '_company' ] ) ) . ')';      
+		            }
+		            
+				break;
+				
+				case 'requirement':
+
+		            if ( isset( $postarr[ $this->plugin_slug . '_deal' ] ) ){
+		            	$ref_number = get_post_meta( intval ( $postarr[ $this->plugin_slug . '_deal' ] ), $this->plugin_slug . '_ref_number', true );
+		                $data['post_title']  = trim ( $ref_number );      
+		            }
+		            
+		            if ( isset( $postarr[ $this->plugin_slug . '_for_client' ] ) ){
+			            $users = get_users( array( 'include' => $postarr[ $this->plugin_slug . '_for_client' ] ) );
+		            	$data['post_title'] .= ' - ';
+						
+		            	foreach( $users as $u ){
+			            	$data['post_title'] .= $u->display_name . ', ';
+		            	}
+						$data['post_title'] = substr( $data['post_title'], 0, strlen( $data['post_title'] ) - 2 );
+					
+					}
+					
+					$data['post_title'] .= ' [' . $postarr['ID'] .']' ; 
+		            
+				break;
+								
+				default:
+				break;
+				
+			}
+			
+			//$slug = sanitize_title ( $data['post_title'] );
+			//wp_unique_post_slug( $slug, $postarr['ID'], $data['post_status'], $data['post_type'], $data['post_parent'] );
+			return $data;
+			
+		}
+		
+	}// end class
+}// end if class exists

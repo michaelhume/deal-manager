@@ -22,7 +22,7 @@
     class MHDM_Shortcodes 
     {
         
-    	/**
+       /**
         *   Main Class constructor
         *   Setup hooks and filters for this plugin
         *

@@ -344,7 +344,7 @@ if ( ! class_exists( 'MH_Deal_Manager_MetaBoxes' ) ) {
 	            $fields[] = array(
                         	'name'			=> __( $term->name . '(s)', $this->plugin_slug ),
                 			'desc' 			=> __( 'Add ' . ucwords( $term->name ), $this->plugin_slug ),
-                			'id'   			=> $this->plugin_slug . '_' . $term->name,
+                			'id'   			=> $this->plugin_slug . '_' . strtolower ( $term->name ),
                 			'clone' 		=> true,
                 			'type' 			=> 'post',
                 			'post_type' 	=> 'associate',
@@ -521,8 +521,8 @@ if ( ! class_exists( 'MH_Deal_Manager_MetaBoxes' ) ) {
 	
 	                        // Country
 	                        array(
-	                    			'name'  => __( 'County', $this->plugin_slug ),
-	                    			'id'    => $this->plugin_slug . '_county',
+	                    			'name'  => __( 'Country', $this->plugin_slug ),
+	                    			'id'    => $this->plugin_slug . '_country',
 	                    			'placeholder' => 'Canada',
 	                    			'type'  => 'text',
 	                    		),
@@ -561,6 +561,17 @@ if ( ! class_exists( 'MH_Deal_Manager_MetaBoxes' ) ) {
 	            			'post_type'		=> 'deal',
 	            			'clone'			=> false,
 			                'placeholder'   => 'Select Deal',
+							'field_type'    => 'select_advanced',
+	            			'query_args'    => array(),
+                        ),
+                     
+                     array(
+	            			'name'          => __( 'Client', $this->plugin_slug, $this->plugin_slug ),
+	            			'desc'			=> __( 'The client this requirement applies to' ),
+	            			'id'            => $this->plugin_slug . '_for_client',
+	            			'type'          => 'user',
+	            			'clone'			=> true,
+			                'placeholder'   => 'Select Client',
 							'field_type'    => 'select_advanced',
 	            			'query_args'    => array(),
                         ),

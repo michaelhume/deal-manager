@@ -11,7 +11,6 @@
  * @license GNU General Public License v2 or later (http://www.gnu.org/licenses/gpl-2.0.html)
  *
  *  @todo add help screens
- *  @todo modify meta boxes as required
  */
 if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 	class MH_Deal_Manager_Post_Types
@@ -19,18 +18,46 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 	    /**
 	     * plugin_slug
 	     * 
+	     * @since 1.0.0
 	     * @var mixed
 	     * @access private
 	     */
 	    private $plugin_slug;
 	    
+	    
+		/**
+		 * instance
+		 *
+		 *	Instance of class singleton
+		 * 
+		 * (default value: null)
+		 * 
+		 * @var mixed
+		 * @access protected
+		 * @static
+		 */
+		protected static $instance = null;
+	    
+	    /**
+	     * registered_types
+	     * 
+	     * (default value: array())
+	     * 
+	     * @since 1.0.0
+	     * @var array
+	     * @access protected
+	     */
+	    protected $registered_types = array();
+	    
+	    
 	    /**
 	     * __construct function.
-	     * 
+	     *
+	     * @since 1.0.0 
 	     * @access public
 	     * @return void
 	     */
-	    public function __construct(){
+	    private function __construct(){
 	        
 	        $plugin = MH_Deal_Manager::get_instance();
 	        $this->plugin_slug = $plugin->get_plugin_slug();
@@ -39,13 +66,40 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 	        
 	    }
 	    
+	    /**
+		 * Return an instance of this class.
+		 *
+		 * @since     1.0.0
+		 *
+		 * @return    object    A single instance of this class.
+		 */
+		public static function get_instance() {
+	
+			// If the single instance hasn't been set, set it now.
+			if ( null == self::$instance ) {
+				self::$instance = new self;
+			}
+	
+			return self::$instance;
+		}
+		
+		
+		/**
+		 * get_registered_types function.
+		 * 
+		 * since 1.0.0
+		 * @access public
+		 * @return void
+		 */
+		public function get_registered_types(){
+			return $this->registered_types;
+			
+		}
 	    
 	    /**
 	     * register_post_types function.
-	     *
-	     *	Possible post types are:
-		 *     'deal', 'requirement', 'associate', 'property'
 	     * 
+	     * @since 1.0.0
 	     * @access public
 	     * @return void
 	     */
@@ -81,6 +135,7 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 	    /**
 	     * register_post_types_now function.
 	     * 
+	     * @since 1.0.0
 	     * @access public
 	     * @return void
 	     */
@@ -105,6 +160,7 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 	     * Register Deal post type
 	     * Do not use before init
 	     *
+	     * @link http://codex.wordpress.org/Function_Reference/register_post_type
 	     * @see register_post_type
 	     * @since 1.0.0
 	     */	
@@ -128,10 +184,11 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 	            'capability_type'    => array( 'deal', 'deals' ),
 	           );
 	        
-	        register_post_type( 'deal', $args );
-	        $this->set_capabilities('deal');
-	         
-	        
+	        $r = register_post_type( 'deal', $args );
+	        if ( !is_wp_error( $r ) ){
+		        $this->set_capabilities('deal');		        
+		        $this->registered_types[] = 'deal';
+	        }
 		}
 		
 		/**
@@ -181,6 +238,7 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 	     *
 	     *	add context sensitive help to the deal screen
 	     * 
+	     * @since 1.0.0
 	     * @access public
 	     * @return void
 	     */
@@ -224,6 +282,7 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 	    /**
 	     * remove_deal_type_taxonomy_box function.
 	     * 
+	     * @since 1.0.0
 	     * @access public
 	     * @return void
 	     */
@@ -260,10 +319,11 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 	            'capability_type'    => array( 'requirement', 'requirements' ),
 	           );
 	        
-	        register_post_type( 'requirement', $args );
-	        $this->set_capabilities('requirement');
-	         
-	        
+	        $r = register_post_type( 'requirement', $args );
+	        if ( !is_wp_error( $r ) ){
+		        $this->set_capabilities('requirement');		        
+		        $this->registered_types[] = 'requirement';
+	        }
 		}
 		
 	    /**
@@ -302,6 +362,7 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 		/**
 		 * add_requirement_help function.
 		 * 
+		 * @since 1.0.0
 		 * @access public
 		 * @return void
 		 */
@@ -370,9 +431,11 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 	            'capability_type'    => array( 'associate', 'associates' ),
 	           );
 	        
-	        register_post_type( 'associate', $args );
-	        $this->set_capabilities('associate');
-	         
+	        $r = register_post_type( 'associate', $args );
+	        if ( !is_wp_error( $r ) ){
+		        $this->set_capabilities('associate');		        
+		        $this->registered_types[] = 'associate';
+	        }
 		}
 		
 		/**
@@ -401,6 +464,7 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 		/**
 		 * add_associate_help function.
 		 * 
+		 * @since 1.0.0
 		 * @access public
 		 * @return void
 		 */
@@ -469,9 +533,11 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 	            'capability_type'    => array( 'property', 'properties' ),
 	           );
 	        
-	        register_post_type( 'property', $args );
-	        $this->set_capabilities('property');
-	         
+	        $r = register_post_type( 'property', $args );
+	        if ( !is_wp_error( $r ) ){
+		        $this->set_capabilities('property');		        
+		        $this->registered_types[] = 'property';
+	        }
 		}
 		
 		/**
@@ -509,6 +575,7 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 	    /**
 	     * remove_mask_taxonomy_box function.
 	     * 
+	     * @since 1.0.0
 	     * @access public
 	     * @return void
 	     */
@@ -520,6 +587,7 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 	    /**
 	     * add_property_help function.
 	     * 
+	     * @since 1.0.0
 	     * @access public
 	     * @return void
 	     */
@@ -591,6 +659,7 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 	    /**
 	     * create_taxonomy_labels function.
 	     * 
+	     * @since 1.0.0
 	     * @access private
 	     * @param string $singular
 	     * @param string $plural (default: false)
@@ -618,6 +687,7 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 	    /**
 	     * create_cpt_labels function.
 	     * 
+	     * @since 1.0.0
 	     * @access private
 	     * @param string $singular
 	     * @param string $plural (default: false)
@@ -643,6 +713,6 @@ if ( ! class_exists( 'MH_Deal_Manager_Post_Types' ) ) {
 	    } 
 	}    	
 }
-$obj = new MH_Deal_Manager_Post_Types;
-$obj = null;
+$obj = MH_Deal_Manager_Post_Types::get_instance();
+
 ?>
